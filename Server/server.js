@@ -80,4 +80,12 @@ app.delete('/api/reviews/:id', (req, res) => {
   });
 });
 
-// app.put();
+app.put('/api/reviews/:id', (req, res) => {
+  Reviews.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true }, (err, results) => {
+    if (err) {
+      res.status(400).send('could not update review');
+    } else {
+      res.send(results);
+    }
+  });
+});
