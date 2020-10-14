@@ -70,6 +70,14 @@ app.post('/api/reviews', (req, res) => {
   });
 });
 
-// app.delete();
+app.delete('/api/reviews/:id', (req, res) => {
+  Reviews.deleteOne({ _id: req.params.id }, (err, results) => {
+    if (err) {
+      res.status(400).send('could not delete review');
+    } else {
+      res.send(results);
+    }
+  });
+});
 
 // app.put();
