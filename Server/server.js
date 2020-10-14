@@ -57,3 +57,19 @@ app.get('/api/reviews/:id', (req, res) => {
     }
   })
 });
+
+// ==================
+
+app.post('/api/reviews', (req, res) => {
+  Reviews.create(req.body, (err, results) => {
+    if (err) {
+      res.status(400).send('could not post review');
+    } else {
+      res.send(results);
+    }
+  });
+});
+
+// app.delete();
+
+// app.put();
