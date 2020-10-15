@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 var path = require('path');
 
-const Reviews = require('../DB/Reviews');
+const Reviews = require('../DB/mongo/Reviews');
 
 const app = express();
 const port = 3004;
