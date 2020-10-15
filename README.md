@@ -14,4 +14,12 @@ Have webpack watch the files via "npm run build"
 
 Reviews should now be rendered on port 3001.
 
+====
+
+CRUD documentation:
+
+* Create a review with a POST request to /api/reviews, including a review object as data;
+* Read all reviews with a GET request to /api/reviews; read reviews for a single item by productId with a GET request to /api/reviews/:id;
+* Update a single review by _id with a PUT request to /api/reviews/:id, including an update object as data;
+* Delete a single review by _id with a DELETE request to /api/reviews/:id;
 
