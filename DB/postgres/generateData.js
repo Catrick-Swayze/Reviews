@@ -43,7 +43,10 @@ const generateReviewParams = function(productId) {
 };
 
 const recursiveQuery = function(productId, reviewId, numReviews, firstReview) {
-  client.query('insert into testing (author, stars, body, createdAt, wouldRecommend, title, comfort, style, value, sizing, photos, helpfulVotes, productId) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)', generateReviewParams(), () => {
+  client.query('insert into reviews (author, stars, body, createdAt, wouldRecommend, title, comfort, style, value, sizing, photos, helpfulVotes, productId) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)', generateReviewParams(productId), (err) => {
+    if (err) {
+      console.log('ERROR: ' + err);
+    }
     if (reviewId < numReviews) {
       recursiveQuery(productId, reviewId + 1, numReviews, false);
     } else if (productId < 100) {
@@ -55,6 +58,7 @@ const recursiveQuery = function(productId, reviewId, numReviews, firstReview) {
   });
 };
 
+var client = new Client({ database: 'postgres' });
 client.connect();
 
 client.query('create database fec_target_reviews', [], (err, results) => {
