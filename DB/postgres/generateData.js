@@ -1,6 +1,5 @@
 const { Client } = require('pg');
 const faker = require('faker');
-const fs = require('fs');
 
 const getRandomNum = function(min, max) {
   return Math.floor((Math.random() * (max - min) + min));
@@ -37,8 +36,39 @@ const generateReviewParams = function(productId) {
     getRandomNum(0, 6),
     getRandomNum(0, 6),
     getRandomNum(1, 4),
-    ["null"],
+    null,
     getRandomNum(0, 21),
     productId
-  ].join(',');
+  ];
 };
+
+const recursiveQuery = function(productId, reviewId, numReviews, firstReview) {
+  client.query('insert into testing (author, stars, body, createdAt, wouldRecommend, title, comfort, style, value, sizing, photos, helpfulVotes, productId) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)', generateReviewParams(), () => {
+    if (reviewId < numReviews) {
+      recursiveQuery(productId, reviewId + 1, numReviews, false);
+    } else if (productId < 100) {
+      recursiveQuery(productId + 1, 1, Math.floor(Math.random() * 20 + 1), true);
+    } else {
+      client.end();
+      console.log('finished');
+    }
+  });
+};
+
+client.connect();
+
+client.query('create database fec_target_reviews', [], (err, results) => {
+  client.end();
+
+  client = new Client({ database: 'fec_target_reviews' });
+  client.connect();
+
+  client.query('CREATE TABLE IF NOT EXISTS reviews (id serial primary key, author varchar, stars int, body varchar, createdAt varchar, wouldRecommend boolean, title varchar, comfort int, style int, value int, sizing int, photos json, helpfulVotes int, productId int)', [], (err) => {
+    if (err) {
+      client.end();
+      console.log('1: ' + err);
+    } else {
+      recursiveQuery(1, 1, Math.floor(Math.random() * 5 + 1), true);
+    }
+  });
+});
