@@ -72,7 +72,7 @@ client.query('create database fec_target_reviews', [], (err, results) => {
       client.end();
       console.log('1: ' + err);
     } else {
-      recursiveQuery(1, 1, Math.floor(Math.random() * 5 + 1), true);
+      recursiveQuery(1, 1, Math.floor(Math.random() * 20 + 1), true);
     }
   });
 });
