@@ -42,18 +42,64 @@ const generateReviewParams = function(productId) {
   ];
 };
 
-const recursiveQuery = function(productId, reviewId, numReviews) {
-  client.query('insert into reviews (author, stars, body, createdAt, wouldRecommend, title, comfort, style, value, sizing, photos, helpfulVotes, productId) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)', generateReviewParams(productId), () => {
-    if (reviewId < numReviews) {
-      recursiveQuery(productId, reviewId + 1, numReviews);
-    } else if (productId < 10000) {
-      recursiveQuery(productId + 1, 1, Math.floor(Math.random() * 20 + 1));
-    } else {
-      client.end();
-      console.log('finished');
+// const recursiveQuery = function(productId, reviewId, numReviews) {
+//   client.query('insert into reviews (author, stars, body, createdAt, wouldRecommend, title, comfort, style, value, sizing, photos, helpfulVotes, productId) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)', generateReviewParams(productId), () => {
+//     if (reviewId < numReviews) {
+//       recursiveQuery(productId, reviewId + 1, numReviews);
+//     } else if (productId < 10000) {
+//       recursiveQuery(productId + 1, 1, Math.floor(Math.random() * 20 + 1));
+//     } else {
+//       client.end();
+//       console.log('finished');
+//     }
+//   });
+// };
+
+const bulkRecursiveQuery = function() {
+
+  const generateQueryStringFor1Review = function($start) {
+    var q = '(';
+    for (var i = $start; i < $start + 12; i++) {
+      q += '$' + i + ', ';
     }
-  });
+    q += '$' + ($start + 12) + ')';
+    return q;
+  };
+
+  const generateParamsAndQueryStringFor100Products = function(firstProductId) {
+    var $start = 1;
+    var params = [];
+    var queryString = '';
+    for (var i = firstProductId; i < firstProductId + 100; i++) {
+      var numReviews = Math.floor(Math.random() * 20 + 1);
+      for (var j = 0; j < numReviews; j++) {
+        params = params.concat(generateReviewParams(i));
+        if ($start === 1) {
+          queryString += generateQueryStringFor1Review(1);
+        } else {
+          queryString += ', ' + generateQueryStringFor1Review($start);
+        }
+        $start += 13;
+      }
+    }
+    return { params, queryString };
+  };
+
+  const recurse = function(firstProductId) {
+    var { params, queryString } = generateParamsAndQueryStringFor100Products(firstProductId);
+    client.query('insert into reviews (author, stars, body, createdAt, wouldRecommend, title, comfort, style, value, sizing, photos, helpfulVotes, productId) values ' + queryString, params, (err) => {
+      if (firstProductId < 900) {
+        recurse(firstProductId + 100);
+      } else {
+        client.end();
+        console.log('done generating stuff');
+      }
+    });
+  };
+
+  recurse(1);
 };
+
 
 var client = new Client({ database: 'postgres' });
 client.connect();
@@ -64,12 +110,7 @@ client.query('create database fec_target_reviews', [], (err, results) => {
   client = new Client({ database: 'fec_target_reviews' });
   client.connect();
 
-  client.query('CREATE TABLE IF NOT EXISTS reviews (id serial primary key, author varchar, stars int, body varchar, createdAt varchar, wouldRecommend boolean, title varchar, comfort int, style int, value int, sizing int, photos json, helpfulVotes int, productId int)', [], (err) => {
-    if (err) {
-      client.end();
-      console.log('1: ' + err);
-    } else {
-      recursiveQuery(1, 1, Math.floor(Math.random() * 20 + 1));
-    }
+  client.query('CREATE TABLE IF NOT EXISTS reviews (id serial primary key, author varchar, stars int, body varchar, createdAt varchar, wouldRecommend boolean, title varchar, comfort int, style int, value int, sizing int, photos json, helpfulVotes int, productId int)', [], () => {
+    bulkRecursiveQuery();
   });
 });
