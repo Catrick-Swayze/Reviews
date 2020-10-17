@@ -42,19 +42,6 @@ const generateReviewParams = function(productId) {
   ];
 };
 
-// const recursiveQuery = function(productId, reviewId, numReviews) {
-//   client.query('insert into reviews (author, stars, body, createdAt, wouldRecommend, title, comfort, style, value, sizing, photos, helpfulVotes, productId) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)', generateReviewParams(productId), () => {
-//     if (reviewId < numReviews) {
-//       recursiveQuery(productId, reviewId + 1, numReviews);
-//     } else if (productId < 10000) {
-//       recursiveQuery(productId + 1, 1, Math.floor(Math.random() * 20 + 1));
-//     } else {
-//       client.end();
-//       console.log('finished');
-//     }
-//   });
-// };
-
 const bulkRecursiveQuery = function(numProducts, batchSize) {
 
   const generateQueryStringFor1Review = function($start) {
@@ -111,6 +98,6 @@ client.query('create database fec_target_reviews', [], (err, results) => {
   client.connect();
 
   client.query('CREATE TABLE IF NOT EXISTS reviews (id serial primary key, author varchar, stars int, body varchar, createdAt varchar, wouldRecommend boolean, title varchar, comfort int, style int, value int, sizing int, photos json, helpfulVotes int, productId int)', [], () => {
-    bulkRecursiveQuery(10000, 100);
+    bulkRecursiveQuery(10000000, 100);
   });
 });
