@@ -55,7 +55,7 @@ const generateReviewParams = function(productId) {
 //   });
 // };
 
-const bulkRecursiveQuery = function() {
+const bulkRecursiveQuery = function(numProducts, batchSize) {
 
   const generateQueryStringFor1Review = function($start) {
     var q = '(';
@@ -66,11 +66,11 @@ const bulkRecursiveQuery = function() {
     return q;
   };
 
-  const generateParamsAndQueryStringFor100Products = function(firstProductId) {
+  const generateParamsAndQueryStringForMultipleProducts = function(firstProductId) {
     var $start = 1;
     var params = [];
     var queryString = '';
-    for (var i = firstProductId; i < firstProductId + 100; i++) {
+    for (var i = firstProductId; i < firstProductId + batchSize; i++) {
       var numReviews = Math.floor(Math.random() * 20 + 1);
       for (var j = 0; j < numReviews; j++) {
         params = params.concat(generateReviewParams(i));
@@ -86,10 +86,10 @@ const bulkRecursiveQuery = function() {
   };
 
   const recurse = function(firstProductId) {
-    var { params, queryString } = generateParamsAndQueryStringFor100Products(firstProductId);
+    var { params, queryString } = generateParamsAndQueryStringForMultipleProducts(firstProductId);
     client.query('insert into reviews (author, stars, body, createdAt, wouldRecommend, title, comfort, style, value, sizing, photos, helpfulVotes, productId) values ' + queryString, params, (err) => {
-      if (firstProductId < 900) {
-        recurse(firstProductId + 100);
+      if (firstProductId < numProducts - batchSize) {
+        recurse(firstProductId + batchSize);
       } else {
         client.end();
         console.log('done generating stuff');
@@ -111,6 +111,6 @@ client.query('create database fec_target_reviews', [], (err, results) => {
   client.connect();
 
   client.query('CREATE TABLE IF NOT EXISTS reviews (id serial primary key, author varchar, stars int, body varchar, createdAt varchar, wouldRecommend boolean, title varchar, comfort int, style int, value int, sizing int, photos json, helpfulVotes int, productId int)', [], () => {
-    bulkRecursiveQuery();
+    bulkRecursiveQuery(10000, 100);
   });
 });
