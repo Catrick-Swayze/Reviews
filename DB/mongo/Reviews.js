@@ -22,4 +22,11 @@ const reviewSchema = new mongoose.Schema({
 
 const Reviews = mongoose.model('Reviews', reviewSchema);
 
-module.exports = Reviews;
+var find = Reviews.find.bind(Reviews);
+var create = Reviews.create.bind(Reviews);
+var deleteOne = Reviews.deleteOne.bind(Reviews);
+var findOneAndUpdate = Reviews.findOneAndUpdate.bind(Reviews);
+
+module.exports = {
+  Reviews, find, create, deleteOne, findOneAndUpdate
+};
