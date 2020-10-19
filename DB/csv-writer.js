@@ -1,7 +1,7 @@
 const faker = require('faker');
 const fs = require('fs');
 
-const writeReviews = fs.createWriteStream('reviews.csv');
+const writeReviews = fs.createWriteStream('DB/reviews.csv');
 writeReviews.write('author,stars,body,createdAt,wouldRecommend,title,comfort,style,value,sizing,photos,helpfulVotes,productId\n', 'utf8');
 
 const getRandomNum = function(min, max) {
@@ -91,4 +91,4 @@ const writeReviewsForNProducts = function(n, maxReviewsPerProduct) {
   write();
 };
 
-writeReviewsForNProducts(100, 11);
+writeReviewsForNProducts(10, 5);
