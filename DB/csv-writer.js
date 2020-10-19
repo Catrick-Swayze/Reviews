@@ -52,7 +52,7 @@ const writeNReviews = function(n) {
       productId++;
       let review = generateReviewParams(productId);
       if (n === 0) {
-        writeReviews.write(review, 'utf-8', () => { writeReviews.end() });
+        writeReviews.write(review, 'utf-8', () => { writeReviews.end(); });
       } else {
         writing = writeReviews.write(review, 'utf-8')
       }
@@ -64,4 +64,31 @@ const writeNReviews = function(n) {
   write();
 };
 
-writeNReviews(10);
+const writeReviewsForNProducts = function(n, maxReviewsPerProduct) {
+  n--;
+  let productId = 1;
+  let reviewsLeft = getRandomNum(1, maxReviewsPerProduct);
+  const write = function() {
+    let writing = true;
+    while ((n > 0 || reviewsLeft > 1) && writing) {
+      reviewsLeft--;
+      if (!reviewsLeft) {
+        reviewsLeft = getRandomNum(1, maxReviewsPerProduct);
+        n--;
+        productId++;
+      }
+      let review = generateReviewParams(productId);
+      if (n === 0 && reviewsLeft === 0) {
+        writeReviews.write(review, 'utf-8', () => { writeReviews.end(); });
+      } else {
+        writing = writeReviews.write(review, 'utf-8');
+      }
+    }
+    if (n > 0 || reviewsLeft > 0) {
+      writeReviews.once('drain', write);
+    }
+  };
+  write();
+};
+
+writeReviewsForNProducts(100, 11);
