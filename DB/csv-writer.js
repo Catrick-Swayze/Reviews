@@ -32,6 +32,7 @@ const generateReviewParams = function(productId) {
   if (words[words.length - 1] === ',') {
     words = words.slice(0, words.length - 1);
   }
+  words = words.split(',').join('');
   return `${faker.name.firstName()},`
     +`${getRandomNum(0, 6)},`
     +`${faker.lorem.sentence()},`
@@ -94,4 +95,4 @@ const writeReviewsForNProducts = function(n, maxReviewsPerProduct) {
   write();
 };
 
-writeReviewsForNProducts(10000, 10);
+writeReviewsForNProducts(10000000, 10);
