@@ -2,7 +2,7 @@ const faker = require('faker');
 const fs = require('fs');
 
 const writeReviews = fs.createWriteStream('DB/reviews.csv');
-writeReviews.write('author,stars,body,createdAt,wouldRecommend,title,comfort,style,value,sizing,photos,helpfulVotes,productId\n', 'utf8');
+writeReviews.write('author,stars,body,createdAt,wouldRecommend,title,comfort,style,value,sizing,helpfulVotes,productId\n', 'utf8');
 
 const getRandomNum = function(min, max) {
   return Math.floor((Math.random() * (max - min) + min));
@@ -28,17 +28,20 @@ const getRandomDateString = function() {
 };
 
 const generateReviewParams = function(productId) {
+  var words = faker.random.words();
+  if (words[words.length - 1] === ',') {
+    words = words.slice(0, words.length - 1);
+  }
   return `${faker.name.firstName()},`
     +`${getRandomNum(0, 6)},`
-    +`${faker.lorem.paragraph()},`
+    +`${faker.lorem.sentence()},`
     +`${getRandomDateString()},`
     +`${faker.random.boolean()},`
-    +`${faker.random.words()},`
+    +`${words},`
     +`${getRandomNum(0, 6)},`
     +`${getRandomNum(0, 6)},`
     +`${getRandomNum(0, 6)},`
     +`${getRandomNum(1, 4)},`
-    +`${null},`
     +`${getRandomNum(0, 21)},`
     +`${productId}\n`;
 };
@@ -91,4 +94,4 @@ const writeReviewsForNProducts = function(n, maxReviewsPerProduct) {
   write();
 };
 
-writeReviewsForNProducts(10, 5);
+writeReviewsForNProducts(10000, 10);
