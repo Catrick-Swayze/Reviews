@@ -1,7 +1,7 @@
 const faker = require('faker');
 const fs = require('fs');
 
-const writeReviews = fs.createWriteStream('DB/reviews.csv');
+const writeReviews = fs.createWriteStream('DB/id-reviews.csv');
 writeReviews.write('id,author,stars,body,createdAt,wouldRecommend,title,comfort,style,value,sizing,helpfulVotes,productId\n', 'utf8');
 
 const getRandomNum = function(min, max) {
@@ -33,7 +33,7 @@ const generateReviewParams = function(id, productId) {
     words = words.slice(0, words.length - 1);
   }
   words = words.split(',').join('');
-  return `${id}`,
+  return `${id},`
     +`${faker.name.firstName()},`
     +`${getRandomNum(0, 6)},`
     +`${faker.lorem.sentence()},`
@@ -50,12 +50,13 @@ const generateReviewParams = function(id, productId) {
 
 const writeReviewsForNProducts = function(n, maxReviewsPerProduct) {
   n--;
-  let id = 1;
+  let id = 0;
   let productId = 1;
   let reviewsLeft = getRandomNum(1, maxReviewsPerProduct);
   const write = function() {
     let writing = true;
     while ((n > 0 || reviewsLeft > 1) && writing) {
+      id++;
       reviewsLeft--;
       if (!reviewsLeft) {
         reviewsLeft = getRandomNum(1, maxReviewsPerProduct);
