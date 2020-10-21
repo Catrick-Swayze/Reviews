@@ -2,7 +2,7 @@ const faker = require('faker');
 const fs = require('fs');
 
 const writeReviews = fs.createWriteStream('DB/reviews.csv');
-writeReviews.write('author,stars,body,createdAt,wouldRecommend,title,comfort,style,value,sizing,helpfulVotes,productId\n', 'utf8');
+writeReviews.write('id,author,stars,body,createdAt,wouldRecommend,title,comfort,style,value,sizing,helpfulVotes,productId\n', 'utf8');
 
 const getRandomNum = function(min, max) {
   return Math.floor((Math.random() * (max - min) + min));
@@ -27,13 +27,14 @@ const getRandomDateString = function() {
   return `${date[3]}-${months[date[1]]}-${date[2]}`;
 };
 
-const generateReviewParams = function(productId) {
+const generateReviewParams = function(id, productId) {
   var words = faker.random.words();
   if (words[words.length - 1] === ',') {
     words = words.slice(0, words.length - 1);
   }
   words = words.split(',').join('');
-  return `${faker.name.firstName()},`
+  return `${id}`,
+    +`${faker.name.firstName()},`
     +`${getRandomNum(0, 6)},`
     +`${faker.lorem.sentence()},`
     +`${getRandomDateString()},`
@@ -47,29 +48,9 @@ const generateReviewParams = function(productId) {
     +`${productId}\n`;
 };
 
-const writeNReviews = function(n) {
-  let productId = 0;
-  const write = function() {
-    let writing = true;
-    while (n > 0 && writing) {
-      n--;
-      productId++;
-      let review = generateReviewParams(productId);
-      if (n === 0) {
-        writeReviews.write(review, 'utf-8', () => { writeReviews.end(); });
-      } else {
-        writing = writeReviews.write(review, 'utf-8')
-      }
-    }
-    if (n > 0) {
-      writeReviews.once('drain', write);
-    }
-  };
-  write();
-};
-
 const writeReviewsForNProducts = function(n, maxReviewsPerProduct) {
   n--;
+  let id = 1;
   let productId = 1;
   let reviewsLeft = getRandomNum(1, maxReviewsPerProduct);
   const write = function() {
@@ -81,7 +62,7 @@ const writeReviewsForNProducts = function(n, maxReviewsPerProduct) {
         n--;
         productId++;
       }
-      let review = generateReviewParams(productId);
+      let review = generateReviewParams(id, productId);
       if (n === 0 && reviewsLeft === 0) {
         writeReviews.write(review, 'utf-8', () => { writeReviews.end(); });
       } else {
@@ -95,4 +76,4 @@ const writeReviewsForNProducts = function(n, maxReviewsPerProduct) {
   write();
 };
 
-writeReviewsForNProducts(10000000, 10);
+writeReviewsForNProducts(100, 10);
