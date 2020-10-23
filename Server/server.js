@@ -55,63 +55,35 @@ app.get('/api/reviews/:productId', (req, res) => {
   });
 });
 
-// ==================
+// =================
 
-// app.post('/api/reviews', (req, res) => {
-//   Reviews.create(req.body, (err, results) => {
-//     if (err) {
-//       res.status(400).send('could not post review');
-//     } else {
-//       res.send(results);
-//     }
-//   });
-// });
-
-// app.post('/api/reviews', (req, res) => {
-//   const params = [req.body.author, req.body.stars, req.body.body, req.body.createdAt, req.body.wouldRecommend, req.body.title, req.body.comfort, req.body.style, req.body.value, req.body.sizing, req.body.helpfulVotes, req.body.productId];
-//   client.query('INSERT INTO reviews (author, stars, body, createdAt, wouldRecommend, title, comfort, style, value, sizing, helpfulVotes, productId) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)', params, (err, results) => {
-//     if (err) {
-//       client.query('SELECT setval($1, (SELECT MAX(id) FROM reviews)+1)', ['reviews_id_seq'], () => {
-//         client.query('INSERT INTO reviews (author, stars, body, createdAt, wouldRecommend, title, comfort, style, value, sizing, helpfulVotes, productId) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)', params, (err, results) => {
-//           if (err) {
-//             res.status(400).send('could not post');
-//           } else {
-//             res.send(results);
-//           }
-//         });
-//       });
-//     } else {
-//       res.send(results);
-//     }
-//   });
-// });
-
-// app.get('/api/max', (req, res) => {
-//   client.query('SELECT MAX(id) FROM reviews', [], (err, results) => {
-//     if (err) {
-//       res.send('!!!' + err);
-//     } else {
-//       res.send(results.rows[0]);
-//     }
-//   });
-// });
-
-app.delete('/api/reviews/:id', (req, res) => {
-  Reviews.deleteOne({ _id: req.params.id }, (err, results) => {
+app.post('/api/reviews', (req, res) => {
+  const params = [req.body.author, req.body.stars, req.body.body, req.body.createdAt, req.body.wouldRecommend, req.body.title, req.body.comfort, req.body.style, req.body.value, req.body.sizing, req.body.helpfulVotes, req.body.productId];
+  client.query('INSERT INTO reviews (author, stars, body, createdAt, wouldRecommend, title, comfort, style, value, sizing, helpfulVotes, productId) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)', params, (err, results) => {
     if (err) {
-      res.status(400).send('could not delete review');
+      res.status(400).send('could not post review');
     } else {
       res.send(results);
     }
   });
 });
 
-app.put('/api/reviews/:id', (req, res) => {
-  Reviews.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true }, (err, results) => {
-    if (err) {
-      res.status(400).send('could not update review');
-    } else {
-      res.send(results);
-    }
-  });
-});
+// app.delete('/api/reviews/:id', (req, res) => {
+//   Reviews.deleteOne({ _id: req.params.id }, (err, results) => {
+//     if (err) {
+//       res.status(400).send('could not delete review');
+//     } else {
+//       res.send(results);
+//     }
+//   });
+// });
+
+// app.put('/api/reviews/:id', (req, res) => {
+//   Reviews.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true }, (err, results) => {
+//     if (err) {
+//       res.status(400).send('could not update review');
+//     } else {
+//       res.send(results);
+//     }
+//   });
+// });
