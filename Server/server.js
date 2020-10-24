@@ -1,3 +1,5 @@
+require('newrelic');
+
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -46,7 +48,7 @@ app.get('/:id', (req, res) => {
 });
 
 app.get('/api/reviews/:productId', (req, res) => {
-  client.query('SELECT * FROM reviews WHERE productId=$1', [req.params.productId], (err, results) => {
+  client.query('SELECT * FROM reviews WHERE productId=$1', [Number(req.params.productId)], (err, results) => {
     if (err) {
       res.status(400).send('could not get reviews');
     } else {

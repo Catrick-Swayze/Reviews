@@ -42,8 +42,8 @@ class Reviews extends React.Component {
   sortReviews(data, option) {
     if (option === 'most recent') {
     return data.sort(function compare(a, b) {
-        var aTime = a.createdAt;
-        var bTime = b.createdAt;
+        var aTime = a.createdat;
+        var bTime = b.createdat;
         return bTime.localeCompare(aTime);
       });
     } else if (option === 'highest rated') {
@@ -60,8 +60,8 @@ class Reviews extends React.Component {
       });
     } else if (option === 'most helpful') {
       return data.sort(function compare(a, b) {
-        var aTime = a.helpfulVotes.toString();
-        var bTime = b.helpfulVotes.toString();
+        var aTime = a.helpfulvotes.toString();
+        var bTime = b.helpfulvotes.toString();
         return bTime.localeCompare(aTime);
       });
     }
